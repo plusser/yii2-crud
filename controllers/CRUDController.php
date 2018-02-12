@@ -106,7 +106,7 @@ abstract class CRUDController extends Controller
                     return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url) : '';
                 },
                 'delete' => function ($url, $model, $key){
-                    return Yii::$app->user->can($this->getPermissionPrefix() . 'Delete') ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                    return ((!$model->hasMethod('getHasActiveRelations') OR !$model->hasActiveRelations) AND Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                         'data' => [
                             'confirm' => 'Точно удалить?',
                             'method' => 'post',
@@ -129,7 +129,7 @@ abstract class CRUDController extends Controller
 
     public function getDeleteButton($model)
     {
-        return Yii::$app->user->can($this->getPermissionPrefix() . 'Delete') ? Html::a('Удалить', ['delete', 'id' => $model->id, ], [
+        return ((!$model->hasMethod('getHasActiveRelations') OR !$model->hasActiveRelations) AND Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('Удалить', ['delete', 'id' => $model->id, ], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Точно удалить?',
