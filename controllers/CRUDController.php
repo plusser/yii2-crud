@@ -8,6 +8,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\grid\ActionColumn;
 use crud\actions\CreateAction;
 use crud\actions\DeleteAction;
 use crud\actions\IndexAction;
@@ -94,40 +96,37 @@ abstract class CRUDController extends Controller
         return $model;
     }
 
-    public function getActionColumn()
+    public function getActionColumn(): array
     {
         return [
-            'class' => 'yii\grid\ActionColumn',
-            'buttons' => [
-                'view' => function ($url, $model, $key){
-                    return Yii::$app->user->can($this->getPermissionPrefix() . 'View') ? Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url) : '';
-                },
-                'update' => function ($url, $model, $key){
-                    return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url) : '';
-                },
-                'delete' => function ($url, $model, $key){
-                    return ((!$model->hasMethod('getHasActiveRelations') || !$model->hasActiveRelations) && Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
-                        'data' => [
-                            'confirm' => 'Точно удалить?',
-                            'method' => 'post',
-                        ],
-                    ]) : '';
+            'class' => ActionColumn::class,
+            'headerOptions' => [
+                'style' => 'width: 80px;',
+            ],
+            'visibleButtons' => [
+                'view' => Yii::$app->user->can($this->getPermissionPrefix() . 'View'),
+                'update' => Yii::$app->user->can($this->getPermissionPrefix() . 'Update'),
+                'delete' => function($model, $key, $index){
+                    return (!$model->hasMethod('getHasActiveRelations') || !$model->hasActiveRelations) && Yii::$app->user->can($this->getPermissionPrefix() . 'Delete');
                 },
             ],
+            'urlCreator' => function($action, $model, $key, $index, $column){
+                return Url::toRoute([$action, 'id' => $model->id]);
+            }
         ];
     }
 
-    public function getCreateButton(string $title = 'Создать')
+    public function getCreateButton(string $title = 'Создать'): string
     {
-        return Yii::$app->user->can($this->getPermissionPrefix() . 'Create') ? Html::a($title, ['create'], ['class' => 'btn btn-success']) : NULL;
+        return Yii::$app->user->can($this->getPermissionPrefix() . 'Create') ? Html::a($title, ['create'], ['class' => 'btn btn-success']) : '';
     }
 
-    public function getUpdateButton($model, string $title = 'Редактировать')
+    public function getUpdateButton($model, string $title = 'Редактировать'): string
     {
-        return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a($title, ['update', 'id' => $model->id], ['class' => 'btn btn-success', ]) : NULL;
+        return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a($title, ['update', 'id' => $model->id], ['class' => 'btn btn-success', ]) : '';
     }
 
-    public function getDeleteButton($model, string $title = 'Удалить')
+    public function getDeleteButton($model, string $title = 'Удалить'): string
     {
         return ((!$model->hasMethod('getHasActiveRelations') || !$model->hasActiveRelations) && Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a($title, ['delete', 'id' => $model->id, ], [
             'class' => 'btn btn-danger',
@@ -135,7 +134,7 @@ abstract class CRUDController extends Controller
                 'confirm' => 'Точно удалить?',
                 'method' => 'post',
             ],
-        ]) : NULL;
+        ]) : '';
     }
 
     abstract public function getModelClass();
