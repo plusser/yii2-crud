@@ -21,7 +21,7 @@ abstract class CRUDController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['index', 'create', 'view', 'update', 'delete', ],
                 'rules' => [
                     'index' => [
@@ -52,7 +52,7 @@ abstract class CRUDController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -64,21 +64,21 @@ abstract class CRUDController extends Controller
     {
         return [
             'index' => [
-                'class' => IndexAction::className(),
+                'class' => IndexAction::class,
                 'searchModel' => $this->getModelSearch(),
             ],
             'view' => [
-                'class' => ViewAction::className(),
+                'class' => ViewAction::class,
             ],
             'create' => [
-                'class' => CreateAction::className(),
+                'class' => CreateAction::class,
                 'modelClass' => $this->getModelClass(),
             ],
             'update' => [
-                'class' => UpdateAction::className(),
+                'class' => UpdateAction::class,
             ],
             'delete' => [
-                'class' => DeleteAction::className(),
+                'class' => DeleteAction::class,
             ],
         ];
     }
@@ -106,7 +106,7 @@ abstract class CRUDController extends Controller
                     return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url) : '';
                 },
                 'delete' => function ($url, $model, $key){
-                    return ((!$model->hasMethod('getHasActiveRelations') OR !$model->hasActiveRelations) AND Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                    return ((!$model->hasMethod('getHasActiveRelations') || !$model->hasActiveRelations) && Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
                         'data' => [
                             'confirm' => 'Точно удалить?',
                             'method' => 'post',
@@ -117,19 +117,19 @@ abstract class CRUDController extends Controller
         ];
     }
 
-    public function getCreateButton()
+    public function getCreateButton(string $title = 'Создать')
     {
-        return Yii::$app->user->can($this->getPermissionPrefix() . 'Create') ? Html::a('Создать', ['create'], ['class' => 'btn btn-success']) : NULL;
+        return Yii::$app->user->can($this->getPermissionPrefix() . 'Create') ? Html::a($title, ['create'], ['class' => 'btn btn-success']) : NULL;
     }
 
-    public function getUpdateButton($model)
+    public function getUpdateButton($model, string $title = 'Редактировать')
     {
-        return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-success', ]) : NULL;
+        return Yii::$app->user->can($this->getPermissionPrefix() . 'Update') ? Html::a($title, ['update', 'id' => $model->id], ['class' => 'btn btn-success', ]) : NULL;
     }
 
-    public function getDeleteButton($model)
+    public function getDeleteButton($model, string $title = 'Удалить')
     {
-        return ((!$model->hasMethod('getHasActiveRelations') OR !$model->hasActiveRelations) AND Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a('Удалить', ['delete', 'id' => $model->id, ], [
+        return ((!$model->hasMethod('getHasActiveRelations') || !$model->hasActiveRelations) && Yii::$app->user->can($this->getPermissionPrefix() . 'Delete')) ? Html::a($title, ['delete', 'id' => $model->id, ], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Точно удалить?',

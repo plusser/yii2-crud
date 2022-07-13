@@ -14,9 +14,9 @@ class CreateAction extends Action
 
     public function run()
     {
-        return (is_object($model = new $this->modelClass) AND $model->load(Yii::$app->request->post()) AND $model->save()) ? $this->controller->redirect([
+        return (is_object($model = new $this->modelClass) && $model->load(Yii::$app->request->post()) && $model->save()) ? $this->controller->redirect([
             $this->redirectAction,
-            'id' => $model->id
+            'id' => $model->id,
         ]) : $this->controller->render($this->viewName, [
             'model' => $model,
         ]);
